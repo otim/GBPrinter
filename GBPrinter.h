@@ -5,9 +5,6 @@
 #include "Arduino.h"
 
 #define delayMs 20
-#define GBClock  8
-#define GBIn  9
-#define GBOut  10
 
 // Command codes
 #define GBInitialize  0x01
@@ -30,11 +27,14 @@ extern uint8_t hadl[640];
 
 extern uint8_t alphabet[475];
 
+class GameBoyPrinter {
+
+public:
 
 // GBIn needs 15kohm pullup (5v).
-void setupPrinter(int in, int out, int clock);
+GameBoyPrinter(int in, int out, int clock);
 
-void initPrinter();
+//void initPrinter();
 
 void printStatusCode(int result);
 
@@ -100,6 +100,7 @@ One empty Data command is sent after the last printing Data command for a page a
  */
 boolean endData(uint16_t checksum);
 
+boolean endPage();
 
 // Any value between 0x1 and 0xF is for some margin between minimum and maximum, apparently proportional to the specified value. 
 /*
@@ -134,5 +135,11 @@ boolean getAcknowledgement();
   A status code is a bitmap to indicate various Printer statuses. It has bit-by-bit meanings.
  */
 uint8_t getStatusCode();
+
+private:
+
+  uint8_t gb_clock_, gb_in_, gb_out_;
+
+};
 
 #endif
