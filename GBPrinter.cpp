@@ -163,16 +163,16 @@ uint8_t GameBoyPrinter::GBSerialOut(uint8_t command) {
       digitalWrite(gb_out_, 0);
     }
 
-    delayMicroseconds(delayMs);		// Wait 20-60us
+    delayMicroseconds(GBP_DELAY);		// Wait 20-60us
     digitalWrite(gb_clock_, 1);            // End clock
     if(digitalRead(gb_clock_))
     {
       gbReplyy |= 1;    // Fetch printer gbReplyy
     }
-    delayMicroseconds(delayMs);		// Wait 20-60us
+    delayMicroseconds(GBP_DELAY);		// Wait 20-60us
   }
 
-  delayMicroseconds(delayMs);		// Wait 20-60us
+  delayMicroseconds(GBP_DELAY);		// Wait 20-60us
 
 
     //Serial.print(command, HEX);
@@ -268,7 +268,7 @@ GB sends one Initialize command when it starts printing a page. If it attempts t
  */
 boolean GameBoyPrinter::sendInitialize()
 {
-  return GBPCommand(GBInitialize, 0);
+  return GBPCommand(GBP_CMD_INIT, 0);
 }
 
 /*
@@ -276,14 +276,14 @@ A command packet whose command code is set to 0x0F is an Inquiry command.
 The compression indicator of the Inquiry command is set to zero (0x00.) 
  The length field is always set to zero (0x00 0x00,) to indicate the Body in the command is empty. 
  The purpose of Inquiry command is to make GB Printer to notify its status to the GB. So, 
- this command is suitable to be used after a Print command or before an Initialize command. 
+ this command is suitable to be used after a Print command or before an GBP_CMD_INITialize command.
  However, unlike other commands, Inquiry command may be issued at any time. 
  The GB Printer is expected to respond to an Inquiry command always. 
  
  */
 uint8_t GameBoyPrinter::sendInquiry()
 {
-  GBPCommand(GBInquiry, 0);
+  GBPCommand(GBP_CMD_INQ, 0);
   return getStatusCode();
 }
 
@@ -296,7 +296,7 @@ A plain printing Data command is used to transmit (a part of) printing image fro
 uint16_t GameBoyPrinter::beginData() // returns checksum
 {
   sendSync();
-  return sendHeader(GBData, 0x00, 0x280); // Grab checksum
+  return sendHeader(GBP_CMD_DATA, 0x00, 0x280); // Grab checksum
 }
 
 /*
@@ -311,7 +311,7 @@ boolean GameBoyPrinter::endData(uint16_t checksum)
 
 boolean GameBoyPrinter::endPage()
 {
-  GBPCommand(GBData, 0);
+  GBPCommand(GBP_CMD_DATA, 0);
   return getStatusCode() == 0x08;
 }
 
@@ -326,7 +326,7 @@ boolean GameBoyPrinter::sendPrint(uint8_t leftMargin, uint8_t rightMargin, uint8
 {
   uint16_t CRC = 0;
   sendSync();
-  CRC += sendHeader(GBPrint, 0x00, 0x04); // Body in a Print command is always four bytes in length.
+  CRC += sendHeader(GBP_CMD_PRINT, 0x00, 0x04); // Body in a Print command is always four bytes in length.
 
   CRC += 0x01;
   GBSerialOut(0x01); // The first byte is always set to 0x01, and its purpose is unknown. 

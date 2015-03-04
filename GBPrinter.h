@@ -4,24 +4,32 @@
 #include <avr/pgmspace.h>
 #include "Arduino.h"
 
-#define delayMs 20
+enum GameBoyPrinterConstant {
+  GBP_DELAY = 20,
+};
 
 // Command codes
-#define GBInitialize  0x01
-#define GBData 0x04
-#define GBPrint 0x02
-#define GBInquiry 0x0f
-#define GBStatus  0x00
+enum GameBoyPrinterCommand {
+  GBP_CMD_INIT = 0x01,
+  GBP_CMD_DATA = 0x04,
+  GBP_CMD_PRINT = 0x02,
+  GBP_CMD_INQ = 0x0f,
+  GBP_CMD_STATUS = 0x00,
+};
 
-#define MarginNone 0x0
-#define MarginMin 0x1
-#define MarginMax 0xF
+enum GameBoyPrinterMargin {
+  GB_MGN_NONE = 0x0,
+  GB_MGN_MIN = 0x1,
+  GB_MGN_MAX = 0xF,
+};
 
-#define GBStatus_LowBattery 0x80
-#define GBStatus_TempBad 0x40
-#define GBStatus_Jam 0x20
-#define GBStatus_Busy 0x10
-#define GBStatus_Good 0x00
+enum GameBoyPrinterStatus {
+  GBP_STS_LOW_BATT = 0x80,
+  GBP_STS_BAD_TEMP = 0x40,
+  GBP_STS_JAM = 0x20,
+  GBP_STS_BUSY = 0x10,
+  GBP_STS_GOOD = 0x00,
+};
 
 extern uint8_t hadl[640];
 

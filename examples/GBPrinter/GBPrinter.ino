@@ -1,4 +1,4 @@
-/* This is based on the works of Miles Burton and the furrtek gang/guy.
+  /* This is based on the works of Miles Burton and the furrtek gang/guy.
  * I made this a library for easier integration into sketches
  * TODO:
  * TextToPrint ( thats what the alphabet array is for)
@@ -18,8 +18,8 @@
 #define GB_OUT  10
 
 //uint8_t c,b,cmd,repl,buffer[64];
-//uint8_t cmd;
-//uint16_t CRC;
+uint8_t cmd;
+uint16_t CRC;
 uint8_t buffer[64];
 /*
   copy the hex output from http://davedarko.com/gameboy.php here
@@ -40,11 +40,11 @@ GameBoyPrinter* printer;
 
 
 void sendRow (uint8_t row2send[]) {
-  uint16_t CRC = 0;
+  CRC = 0;
   Serial.println("Data");
   CRC += printer->beginData();
   for (int i = 0; i < 640; ++i) {
-    uint8_t cmd = row2send[i];
+    cmd = row2send[i];
     CRC += cmd;
     printer->GBSerialOut(cmd);
   }
@@ -67,7 +67,7 @@ void hadCon () {
   printer->sendInquiry();
 
   Serial.println("Data");
-  printer->GBPCommand(GBData, 0);
+  printer->GBPCommand(GBP_CMD_DATA, 0);
   printer->printStatusCode(-1);
   Serial.println("Print");
   printer->sendPrint(1, 3, 0xE4, 0x40);
@@ -94,7 +94,7 @@ void ddimg () {
   printer->sendInquiry();
 
   Serial.println("Data");
-  printer->GBPCommand(GBData, 0);
+  printer->GBPCommand(GBP_CMD_DATA, 0);
   printer->printStatusCode(-1);
   Serial.println("Print");
   printer->sendPrint(1, 3, 0xE4, 0x40);
@@ -160,13 +160,13 @@ void setup() {
 void loop() {
   if (Serial.available() > 0) {
 
-	uint8_t cmd = Serial.read();
+    cmd = Serial.read();
 
     // connection Test
     if (cmd == '?') {
 
       if (printer->sendInitialize()) {
-    	  printer->getStatusCode();
+        printer->getStatusCode();
         Serial.println('1');
       }
       else {
